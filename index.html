@@ -77,6 +77,8 @@ a{text-decoration:none;color:inherit}
 .btn-lime:hover{background:var(--lime-2)}
 .btn-dark{background:var(--ink);color:#fff}
 .btn-ghost{border:1px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--ink)}
+.nav-cta{display:flex;align-items:center;gap:10px}
 .btn-lg{padding:15px 24px;font-size:15px}
 
 /* HERO */
@@ -324,7 +326,10 @@ a{text-decoration:none;color:inherit}
         <a href="#lista">Lista de espera</a>
         <a href="#contacto">Contacto</a>
       </div>
-      <a class="btn btn-lime" href="#lista">Únete a la lista →</a>
+      <div class="nav-cta">
+        <a class="btn btn-ghost" href="https://proppio-voice-production.up.railway.app/login.html">Acceso</a>
+        <a class="btn btn-lime" href="#lista">Únete a la lista →</a>
+      </div>
     </nav>
   </div>
 </div>
