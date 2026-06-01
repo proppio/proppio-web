@@ -327,7 +327,7 @@ a{text-decoration:none;color:inherit}
         <a href="#contacto">Contacto</a>
       </div>
       <div class="nav-cta">
-        <a class="btn btn-ghost" href="https://proppio-voice-production.up.railway.app/login.html">Acceso</a>
+        <a class="btn btn-ghost" href="/login/">Acceso</a>
         <a class="btn btn-lime" href="#lista">Únete a la lista →</a>
       </div>
     </nav>
@@ -442,21 +442,25 @@ a{text-decoration:none;color:inherit}
       </ul>
     </div>
 
-    <form class="wl-card" onsubmit="event.preventDefault();this.querySelector('button').innerText='¡Gracias! Te escribimos pronto →'">
+    <form class="wl-card" id="wl-form" novalidate>
       <div class="wl-head"><span>Lista de espera · v1</span><span class="st">Abierta</span></div>
       <h3 class="wl-ttl">Solicita tu invitación</h3>
       <p class="wl-subttl">Tres minutos, ningún compromiso. Respondemos personalmente a cada agencia.</p>
 
       <div class="fields">
-        <div class="field"><label>Nombre</label><input placeholder="Tu nombre"></div>
-        <div class="field"><label>Agencia</label><input placeholder="Nombre de tu agencia"></div>
-        <div class="field"><label>Ciudad</label><input placeholder="Valencia"></div>
-        <div class="field"><label>Teléfono</label><input placeholder="+34 …"></div>
-        <div class="field full"><label>Correo electrónico</label><input type="email" placeholder="tu@agencia.es"></div>
+        <div class="field"><label>Nombre</label><input name="nombre_persona" placeholder="Tu nombre"></div>
+        <div class="field"><label>Agencia</label><input name="agencia" placeholder="Nombre de tu agencia" required></div>
+        <div class="field"><label>Ciudad</label><input name="ciudad" placeholder="Valencia"></div>
+        <div class="field"><label>Teléfono</label><input name="telefono" placeholder="+34 …"></div>
+        <div class="field full"><label>Correo electrónico</label><input name="email" type="email" placeholder="tu@agencia.es" required></div>
       </div>
 
-      <button type="submit" class="btn btn-lime btn-lg">Apúntame a la lista →</button>
-      <p class="wl-note">Sin spam. Solo una notificación cuando lancemos.</p>
+      <!-- Honeypot anti-bot: invisible para humanos; si se rellena, el backend ignora el envío -->
+      <input type="text" name="company_website" tabindex="-1" autocomplete="off" aria-hidden="true"
+             style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+
+      <button type="submit" class="btn btn-lime btn-lg" id="wl-btn">Apúntame a la lista →</button>
+      <p class="wl-note" id="wl-note">Sin spam. Solo una notificación cuando lancemos.</p>
     </form>
   </section>
 
@@ -520,6 +524,97 @@ a{text-decoration:none;color:inherit}
     }
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
+  })();
+
+  // Waitlist: envía el formulario al backend (/api/waitlist, proxied a Railway
+  // vía vercel.json). Mismo origen, sin CORS. Degrada con mensaje claro.
+  (function(){
+    var form = document.getElementById('wl-form');
+    if (!form) return;
+    var btn  = document.getElementById('wl-btn');
+    var note = document.getElementById('wl-note');
+    var sending = false;
+
+    function setNote(text, color){
+      if (!note) return;
+      note.textContent = text;
+      note.style.color = color || '';
+    }
+
+    form.addEventListener('submit', function(ev){
+      ev.preventDefault();
+      if (sending) return;
+
+      var data = {
+        email:   (form.email.value || '').trim(),
+        agencia: (form.agencia.value || '').trim(),
+        company_website: (form.company_website.value || ''),
+      };
+      var nombre   = (form.nombre_persona.value || '').trim();
+      var ciudad   = (form.ciudad.value || '').trim();
+      var telefono = (form.telefono.value || '').trim();
+
+      // Validación mínima de cliente (el backend revalida).
+      if (!data.agencia || data.agencia.length < 2) {
+        setNote('Escribe el nombre de tu agencia.', '#ef4444');
+        form.agencia.focus();
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+        setNote('Escribe un correo válido.', '#ef4444');
+        form.email.focus();
+        return;
+      }
+
+      // El backend espera agencia_nombre; nombre y ciudad van en mensaje.
+      var mensajeParts = [];
+      if (nombre) mensajeParts.push('Contacto: ' + nombre);
+      if (ciudad) mensajeParts.push('Ciudad: ' + ciudad);
+
+      var payload = {
+        email:          data.email,
+        agencia_nombre: data.agencia,
+        telefono:       telefono || undefined,
+        mensaje:        mensajeParts.length ? mensajeParts.join(' · ') : undefined,
+        source:         'landing',
+        company_website: data.company_website,
+      };
+
+      sending = true;
+      if (btn) { btn.disabled = true; btn.textContent = 'Enviando…'; }
+      setNote('', '');
+
+      fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).then(function(r){
+        return r.json().catch(function(){ return {}; }).then(function(body){
+          return { ok: r.ok, status: r.status, body: body };
+        });
+      }).then(function(res){
+        if (res.ok || res.status === 201 || res.status === 200) {
+          if (btn) btn.textContent = '¡Gracias! Te escribimos pronto →';
+          setNote('Hemos recibido tu solicitud. Te escribimos pronto.', '#10b981');
+        } else if (res.status === 400) {
+          sending = false;
+          if (btn) { btn.disabled = false; btn.textContent = 'Apúntame a la lista →'; }
+          setNote('Revisa el correo y el nombre de la agencia.', '#ef4444');
+        } else if (res.status === 429) {
+          sending = false;
+          if (btn) { btn.disabled = false; btn.textContent = 'Apúntame a la lista →'; }
+          setNote('Demasiados intentos. Prueba en unos minutos.', '#ef4444');
+        } else {
+          // No perdemos el lead: ofrecemos email directo.
+          if (btn) btn.textContent = 'Escríbenos a hi@proppio.ai';
+          setNote('No hemos podido registrarte automáticamente. Escríbenos a hi@proppio.ai y te apuntamos.', '#ef4444');
+        }
+      }).catch(function(){
+        sending = false;
+        if (btn) { btn.disabled = false; btn.textContent = 'Apúntame a la lista →'; }
+        setNote('Sin conexión. Reinténtalo o escríbenos a hi@proppio.ai.', '#ef4444');
+      });
+    });
   })();
 </script>
 
