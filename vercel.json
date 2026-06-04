@@ -1,5 +1,9 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://proppio-voice-production.up.railway.app/api/:path*" }
+    { "source": "/api/:path*",   "destination": "https://proppio-voice-production.up.railway.app/api/:path*" },
+    { "source": "/login",        "destination": "https://proppio-voice-production.up.railway.app/login.html" },
+    { "source": "/login/",       "destination": "https://proppio-voice-production.up.railway.app/login.html" },
+    { "source": "/login.html",   "destination": "https://proppio-voice-production.up.railway.app/login.html" },
+    { "source": "/assets/:path*", "destination": "https://proppio-voice-production.up.railway.app/assets/:path*" }
   ]
 }
