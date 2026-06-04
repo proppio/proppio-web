@@ -5,6 +5,8 @@
     { "source": "/login.html",   "destination": "https://proppio-voice-production.up.railway.app/login.html" },
     { "source": "/app",          "destination": "https://proppio-voice-production.up.railway.app/app/index.html" },
     { "source": "/app/:path*",   "destination": "https://proppio-voice-production.up.railway.app/app/:path*" },
-    { "source": "/api/:path*",   "destination": "https://proppio-voice-production.up.railway.app/api/:path*" }
+    { "source": "/api/:path*",   "destination": "https://proppio-voice-production.up.railway.app/api/:path*" },
+    { "source": "/assets/:path*", "destination": "https://proppio-voice-production.up.railway.app/assets/:path*" },
+    { "source": "/:file(index|leads|lead|catalogo|propiedad|solicitudes|equipo|config|onboarding|importar|visitas|signup-requests|sim-equivalente|waitlist|demo|signup|status).html", "destination": "https://proppio-voice-production.up.railway.app/:file.html" }
   ]
 }
