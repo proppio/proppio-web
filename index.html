@@ -70,6 +70,8 @@ a{text-decoration:none;color:inherit}
 .brand{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:600;letter-spacing:-.015em;transition:opacity .15s ease}
 .brand:hover{opacity:.7}
 .brand .mark{width:30px;height:30px;display:block;object-fit:contain}
+.brand .brand-word{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-weight:400;font-size:26px;letter-spacing:-.01em;line-height:1}
+.brand .brand-word .em{color:var(--blue)}
 .nav-links{display:flex;gap:28px;font-size:14px;color:var(--ink-2)}
 .nav-links a:hover{color:var(--ink)}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;font-size:14px;font-weight:500;transition:transform .15s;cursor:pointer;border:0}
@@ -246,6 +248,7 @@ a{text-decoration:none;color:inherit}
   .nav .btn{padding:9px 14px;font-size:13px}
   .brand{font-size:17px}
   .brand .mark{width:26px;height:26px;font-size:17px}
+  .brand .brand-word{font-size:23px}
 
   .hero{grid-template-columns:1fr;gap:40px;padding:32px 0 24px;min-height:auto;text-align:left}
   .h1{font-size:44px;line-height:1.02;margin-top:18px;max-width:none}
@@ -321,7 +324,7 @@ a{text-decoration:none;color:inherit}
 <div class="nav-wrap" id="navWrap">
   <div class="container">
     <nav class="nav">
-      <a class="brand" href="/" aria-label="Proppio — Ir al inicio"><img class="mark" src="/proppio-logo.png" alt="" width="30" height="30">Proppio</a>
+      <a class="brand" href="/" aria-label="Proppio — Ir al inicio"><img class="mark" src="/proppio-logo.png" alt="" width="30" height="30"><span class="brand-word">Pro<span class="em">pp</span>io</span></a>
       <div class="nav-links">
         <a href="#como">Cómo funciona</a>
         <a href="#lista">Lista de espera</a>
