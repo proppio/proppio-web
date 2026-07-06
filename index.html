@@ -815,6 +815,8 @@ a{text-decoration:none;color:inherit}
   .bcard{padding:24px;border-radius:20px}
   .bcard.span-2{grid-column:span 1;flex-direction:column;gap:0}
   .bcard.span-2 .b-copy{padding-top:26px}
+  /* la tarjeta de canales crece para mostrar todos los tiles sin recorte en móvil */
+  .b-visual.b-tiles{height:auto}
 
   /* SMART COMPARE */
   .smart{padding:8px 0 64px}
@@ -1070,7 +1072,7 @@ a{text-decoration:none;color:inherit}
           <h4>Trabaja con tus canales</h4>
           <p>Atiende los leads de tus portales, WhatsApp y centralita, y te los entrega cualificados y ordenados — listos para volcar a tu CRM y tu calendario.</p>
         </div>
-        <div class="b-visual">
+        <div class="b-visual b-tiles">
           <div class="int-tiles">
             <span class="int-tile"><span class="ico" style="background:#baff3b;color:#0b3b00">Id</span>Idealista</span>
             <span class="int-tile"><span class="ico d">Fc</span>Fotocasa</span>
